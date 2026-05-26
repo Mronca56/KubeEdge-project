@@ -1,3 +1,4 @@
+#Dockefile per simulare l'ambiente edge
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 #Configurazione del sistema del nodo

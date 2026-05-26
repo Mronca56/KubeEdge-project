@@ -14,13 +14,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Main {
+public class Simulator {
 
-    private static final String BROKER_HOST = System.getenv("BROKER_HOST") != null ? System.getenv("BROKER_HOST") : "localhost";
-    private static final String BROKER_PORT = System.getenv("BROKER_PORT") != null ? System.getenv("BROKER_PORT") : "1883";
+    private static final String brokerUrl = System.getenv("BROKER_URL") != null ? System.getenv("BROKER_URL") : "tcp://localhost:1883";
 
     public static void main(String[] args) {
-        String brokerUrl = "tcp://" + BROKER_HOST + ":" + BROKER_PORT;
         Random r = new Random();
         ObjectMapper objectMapper = new ObjectMapper();
 
