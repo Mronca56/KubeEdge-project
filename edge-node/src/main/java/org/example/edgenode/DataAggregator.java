@@ -1,8 +1,9 @@
-package org.example;
+package org.example.edgenode;
 
 import org.example.DTO.RawCameraDTO;
 import org.example.DTO.RawRegisterDTO;
 import org.example.DTO.TelemetryDTO;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Component
 public class DataAggregator {
     private final List<RawCameraDTO> cameraList =  new LinkedList<>();
     private final List<RawRegisterDTO> registerList = new LinkedList<>();
