@@ -3,9 +3,11 @@ package org.example.centralcloud.Repository;
 import org.example.centralcloud.Entity.TelemetryEntity;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface TelemetryRepo extends MongoRepository<TelemetryEntity, String> {
     List<TelemetryEntity> findByStore(String store);
 

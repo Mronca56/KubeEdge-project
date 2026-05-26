@@ -2,11 +2,11 @@ package org.example.centralcloud.Service;
 
 import org.example.centralcloud.Entity.TelemetryEntity;
 import org.example.centralcloud.Repository.TelemetryRepo;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class TelemetryService {
     private final TelemetryRepo telemetryRepo;
 
