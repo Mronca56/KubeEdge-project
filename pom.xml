@@ -11,7 +11,7 @@
     <modules>
         <module>shared-models</module>
         <module>device-simulation</module>
-        <module>edge-store</module>
+        <module>edge-node</module>
     </modules>
 
     <properties>
