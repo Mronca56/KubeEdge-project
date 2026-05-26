@@ -12,6 +12,7 @@
         <module>shared-models</module>
         <module>device-simulation</module>
         <module>edge-node</module>
+        <module>central-cloud</module>
     </modules>
 
     <properties>
