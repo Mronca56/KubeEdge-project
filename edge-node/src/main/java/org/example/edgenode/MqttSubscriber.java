@@ -3,10 +3,7 @@ package org.example.edgenode;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.eclipse.paho.client.mqttv3.*;
-import org.example.DTO.AlertDTO;
-import org.example.DTO.RawCameraDTO;
-import org.example.DTO.RawRegisterDTO;
-import org.example.DTO.TelemetryDTO;
+import org.example.DTO.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,24 +18,24 @@ import java.util.Map;
 @Service
 public class MqttSubscriber {
     //Da passare dal file yaml
-    @Value("${mqtt.broker-url}")
+    @Value("${mqtt.broker.url}")
     private String brokerUrl;
 
-    @Value("${mqtt.client-id}")
+    @Value("${mqtt.client.id}")
     private String clientId;
 
     private final DataAggregator dataAggregator;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     Map<Integer, Integer> stock = new HashMap<>();
 
     private MqttClient client;
+
     //Orari degli ultimi messaggi ricevuti dai device, da usare per vedere se vanno in errore
     private LocalDateTime lastCameraMsgTime = LocalDateTime.now();
     private LocalDateTime lastRegisterMsgTime = LocalDateTime.now();
 
-    public MqttSubscriber(DataAggregator dataAggregator, ObjectMapper objectMapper) {
+    public MqttSubscriber(DataAggregator dataAggregator) {
         this.dataAggregator = dataAggregator;
-        this.objectMapper = objectMapper;
     }
 
     public void refill(){
@@ -98,27 +95,25 @@ public class MqttSubscriber {
             //Controllo se devo mandare degli alert
             if (raw.isSuspiciosActivity()) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
-                        "Critical", AlertDTO.Status.SUSPECT_ACTIVITY,
+                        "Critical", Status.SUSPECT_ACTIVITY,
                         "SUSPICIOUS ACTIVTY ON CAMERA!!"
                 );
-
-                client.publish("MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent camera alert");
             }
             if (raw.getQueueLength() > 15) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
-                        "Critical", AlertDTO.Status.LONG_QUEUE,
+                        "Critical", Status.LONG_QUEUE,
                         "MORE THAN 15 PEOPLE WAITING!"
                 );
-
-                client.publish("MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent camera alert");
             }
 
             //Logica di aggregazione, gestita dalla classe apposita, se mi ritorna null vuol dire che non è ancora il momento di mandare i dati
             TelemetryDTO tel = dataAggregator.getCameras(raw);
             if (tel != null) {
-                client.publish("MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
+                client.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
                 System.out.println("Sent telemetry");
             }
 
@@ -135,17 +130,17 @@ public class MqttSubscriber {
 
             if (stock.get(raw.getCodeProduct()) <= 0) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
-                        "Critical", AlertDTO.Status.LOW_STOCK,
+                        "Critical", Status.LOW_STOCK,
                         "LOW STOCK OF THE PRODUCT"
                 );
                 //Il cloud dovrebbe quando riceve questo chiamare la funzione refill
-                client.publish("MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent register alert");
             }
 
             TelemetryDTO tel = dataAggregator.getRegisters(raw);
             if (tel != null) {
-                client.publish("MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
+                client.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
                 System.out.println("Sent telemetry");
             }
         }catch (MqttException |JacksonException e) {
@@ -161,21 +156,19 @@ public class MqttSubscriber {
 
             if (ChronoUnit.MINUTES.between(lastCameraMsgTime, now) >= 1) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
-                        "Critical", AlertDTO.Status.HARDWARE_FAILURE,
+                        "Critical", Status.HARDWARE_FAILURE,
                         "HARDWARE FAILURE OF A CAMERA! MORE THAN 1 MINUTE WITHOUT DATA!"
                 );
-
-                client.publish("MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent Camera alert");
             }
 
             if (ChronoUnit.MINUTES.between(lastRegisterMsgTime, now) >= 1) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
-                        "Critical", AlertDTO.Status.HARDWARE_FAILURE,
+                        "Critical", Status.HARDWARE_FAILURE,
                         "HARDWARE FAILURE OF A REGISTER! MORE THAN 1 MINUTE WITHOUT DATA!"
                 );
-
-                client.publish("MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent register alert");
             }
         }catch (MqttException |JacksonException e) {

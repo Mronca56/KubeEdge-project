@@ -5,11 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c6cb8d8-b4fd-4578-82b3-7a547e7fc9e7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/AlertEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/AlertEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/TelemetryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/TelemetryEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MqttListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MqttListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/AlertRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/AlertRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/TelemetryRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/TelemetryRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/TelemetryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/TelemetryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/device-simulation/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/device-simulation/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/device-simulation/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/device-simulation/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/edge-node/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/AlertDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/AlertDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/TelemetryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/TelemetryDTO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,21 +29,24 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
+        <option value="Dockerfile" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 5
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="3EGNOeEw0IHxbuOtFEjLOVOxEna" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -42,20 +55,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>

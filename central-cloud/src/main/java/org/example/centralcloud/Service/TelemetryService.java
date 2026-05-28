@@ -31,6 +31,10 @@ public class TelemetryService {
         return average != null ? average : 0.0;
     }
 
+    public List<TelemetryEntity> findAll(){
+        return telemetryRepo.findAll();
+    }
+
     //Metodo per pulire tutte le telemetrie
     public void deleteAll() {
         telemetryRepo.deleteAll();

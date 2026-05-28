@@ -55,9 +55,10 @@ public class MqttListener {
             System.out.println("Connection successful!");
 
             //Subscribe al primo topic
-            client.subscribe("MO/Alert", (topic, message) -> {
+            client.subscribe("cloud/MO/Alert", (topic, message) -> {
                 //LOGICA DI ARRIVO ALERT
                 try {
+                    System.out.println("Received Camera alert");
                     AlertDTO alertDTO = objectMapper.readValue(message.getPayload(), AlertDTO.class);
                     AlertEntity alertEntity = new AlertEntity();
                     //Per trasformare da un oggetto all'altro
@@ -71,9 +72,10 @@ public class MqttListener {
             });
 
             //Subscribe al secondo topic
-            client.subscribe("MO/Telemetry",(topic, message) -> {
+            client.subscribe("cloud/MO/Telemetry",(topic, message) -> {
                 //LOGICA DI ARRIVO TELEMETRIE
                 try {
+                    System.out.println("Received Telemetry alert");
                     TelemetryDTO telemetryDTO = objectMapper.readValue(message.getPayload(), TelemetryDTO.class);
                     TelemetryEntity telemetryEntity = new TelemetryEntity();
 

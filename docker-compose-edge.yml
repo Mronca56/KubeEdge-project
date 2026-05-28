@@ -1,0 +1,43 @@
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: edge-broker
+    ports:
+      - "1884:1883"
+    volumes:
+      - ./mosquitto-edge.conf:/mosquitto/config/mosquitto-edge.conf:ro
+    networks:
+      - factory-net
+      - cloud-net
+
+  store-node:
+    build:
+      context: .
+      dockerfile: edge-node/Dockerfile
+    container_name: store-node
+    depends_on:
+      - mqtt-broker
+    environment:
+      - MQTT_BROKER_URL=tcp://mqtt-broker:1883
+      - MQTT_CLIENT_ID=edge-worker-$${random.value}
+    networks:
+      - factory-net
+
+  edge-sensor:
+    build:
+      context: .
+      dockerfile: device-simulation/Dockerfile
+    container_name: sensor-container
+    depends_on:
+      - mqtt-broker
+    environment:
+      - BROKER_URL=tcp://mqtt-broker:1883
+    networks:
+      - factory-net
+
+networks:
+  factory-net:
+    driver: bridge
+  cloud-net:
+    name: shared-cloud-net
+    external: true

@@ -17,7 +17,7 @@ public class TelemetryEntity {
     @Id
     private String id;
 
-    private String StoreId;
+    private String store;
     private LocalDateTime windowStart;
     private LocalDateTime windowEnd;
     private int scans;

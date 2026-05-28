@@ -15,7 +15,8 @@ public interface TelemetryRepo extends MongoRepository<TelemetryEntity, String> 
     Double sumTotalRevenues();
 
     @Aggregation(pipeline = {
-            "{ '$match': { 'store': ?0 } }" +
-            "{ '$group': { '_id': null, 'average': { $average: '$averageQueue' } } }" })
+            "{ '$match': { 'store': ?0 } }",
+            "{ '$group': { '_id': null, 'average': { '$avg': '$averageQueue' } } }"
+    })
     Double averageQueueByStore(String store);
 }

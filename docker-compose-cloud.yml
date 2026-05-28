@@ -1,0 +1,47 @@
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: cloud-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto-edge.conf:/mosquitto/config/mosquitto-cloud.conf:ro
+    networks:
+      - cloud-net
+
+  mongodb:
+    image: mongo:6.0
+    container_name: cloud-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - cloud-net
+
+  cloud-node:
+    build:
+      context: .
+      dockerfile: /central-cloud/Dockerfile
+    container_name: cloud-node
+    depends_on:
+      - mqtt-broker
+      - mongodb
+    environment:
+      - MQTT_BROKER_URL=tcp://mqtt-broker:1883
+      - MQTT_CLIENT_ID=edge-worker-$${random.value}
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/factory_db
+    ports:
+      - "8080:8080"
+    networks:
+      - cloud-net
+
+networks:
+  cloud-net:
+    name: shared-cloud-net
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local

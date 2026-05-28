@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class TelemetryDTO {
-    private String StoreId;
+    private String store;
     private LocalDateTime windowStart;
     private LocalDateTime windowEnd;
     private int scans;

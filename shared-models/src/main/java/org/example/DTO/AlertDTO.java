@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class AlertDTO {
-    public enum Status {LONG_QUEUE, SUSPECT_ACTIVITY, LOW_STOCK, HARDWARE_FAILURE}
 
-    private String StoreId;
+    private String store;
     private LocalDateTime time;
     private String severity;
     private Status status;
