@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto-conf
+data:
+  mosquitto-cloud.conf: |
+    listener 1883 0.0.0.0
+    allow_anonymous true
+
+  mosquitto-edge.conf: |
+    listener 1883 0.0.0.0
+    allow_anonymous true
+    
+    connection edge_to_cloud
+    #Deve puntare al service mosquitto del cloud
+    address mosquitto-service:1883
+    topic cloud/# out 0

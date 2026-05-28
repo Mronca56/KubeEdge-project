@@ -1,0 +1,36 @@
+apiVersion: devices.kubeedge.io/v1alpha2
+kind: DeviceModel
+metadata:
+  name: camera-model
+  namespace: default
+spec:
+  properties:
+    - name: peopleCount
+      type:
+        int:
+          accessMode: ReadWrite
+          defaultValue: 0
+    - name: queueLength
+      type:
+        int:
+          accessMode: ReadWrite
+          defaultValue: 0
+    - name: suspiciosActivity
+      type:
+        string:
+          accessMode: ReadWrite
+          defaultValue: "STRING"
+---
+apiVersion: devices.kubeedge.io/v1alpha2
+kind: Device
+metadata:
+  name: camera-01
+  namespace: default
+spec:
+  deviceModelRef:
+    name: camera-model
+  nodeName: edge-node-01
+  protocol:
+    protocolName: mqtt
+    configData:
+      url: "tcp://mosquitto-service:1883"

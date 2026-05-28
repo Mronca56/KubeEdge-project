@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.example.DTO.RawCameraDTO;
 import org.example.DTO.RawRegisterDTO;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 public class Simulator {
 
     private static final String brokerUrl = System.getenv("BROKER_URL") != null ? System.getenv("BROKER_URL") : "tcp://localhost:1883";
+    private static final String CAMERA_TOPIC = "$hw/events/device/camera-01/twin/update";
+    private static final String REGISTER_TOPIC = "$hw/events/device/register-01/twin/update";
 
     public static void main(String[] args) {
         Random r = new Random();
@@ -39,10 +42,16 @@ public class Simulator {
             // Task per la Camera (ogni 2 secondi)
             Runnable cameraTask = () -> {
                 try {
-                    RawCameraDTO camera = new RawCameraDTO("MO01", LocalDateTime.now(), r.nextInt(50), r.nextInt(20), r.nextBoolean());
-                    String camMessage = objectMapper.writeValueAsString(camera);
+                    // Costruzione del formato DeviceTwin KubeEdge
+                    ObjectNode twin = objectMapper.createObjectNode();
+                    twin.set("peopleCount", createTwinValue(objectMapper, String.valueOf(r.nextInt(50))));
+                    twin.set("queueLength", createTwinValue(objectMapper, String.valueOf(r.nextInt(20))));
+                    twin.set("suspiciosActivity", createTwinValue(objectMapper, String.valueOf(r.nextBoolean())));
 
-                    client.publish("MO/Camera", new MqttMessage(camMessage.getBytes()));
+                    ObjectNode root = objectMapper.createObjectNode();
+                    root.set("twin", twin);
+
+                    client.publish(CAMERA_TOPIC, new MqttMessage(objectMapper.writeValueAsBytes(root)));
                     System.out.println("Sent camera data");
                 } catch (Exception e) {
                     System.err.println("Errore durante l'invio dei dati Camera: " + e.getMessage());
@@ -53,10 +62,16 @@ public class Simulator {
             Runnable registerTask = () -> {
                 try {
                     int quant = r.nextInt(10);
-                    RawRegisterDTO register = new RawRegisterDTO("CMO", LocalDateTime.now(), 12345, quant, quant * 4.99);
-                    String regMessage = objectMapper.writeValueAsString(register);
+                    //Anche qui costruisco nel formato Device Twin
+                    ObjectNode twin = objectMapper.createObjectNode();
+                    twin.set("codeProduct", createTwinValue(objectMapper, "12345"));
+                    twin.set("quantity", createTwinValue(objectMapper, String.valueOf(quant)));
+                    twin.set("totalPrice", createTwinValue(objectMapper, String.valueOf(quant * 4.99)));
 
-                    client.publish("MO/Register", new MqttMessage(regMessage.getBytes()));
+                    ObjectNode root = objectMapper.createObjectNode();
+                    root.set("twin", twin);
+
+                    client.publish(REGISTER_TOPIC, new MqttMessage(objectMapper.writeValueAsBytes(root)));
                     System.out.println("Sent register data");
                 } catch (Exception e) {
                     System.err.println("Errore durante l'invio dei dati Cassa: " + e.getMessage());
@@ -91,5 +106,16 @@ public class Simulator {
         } catch (MqttException e) {
             System.err.println("Fatal MQTT setup error on startup: " + e.getMessage());
         }
+    }
+
+    private static ObjectNode createTwinValue(ObjectMapper mapper, String value) {
+        ObjectNode actual = mapper.createObjectNode();
+        actual.put("value", value);
+        ObjectNode metadata = mapper.createObjectNode();
+        metadata.put("type", "Updated");
+        ObjectNode property = mapper.createObjectNode();
+        property.set("actual", actual);
+        property.set("metadata", metadata);
+        return property;
     }
 }

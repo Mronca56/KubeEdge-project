@@ -1,0 +1,36 @@
+apiVersion: devices.kubeedge.io/v1alpha2
+kind: DeviceModel
+metadata:
+  name: register-model
+  namespace: default
+spec:
+  properties:
+    - name: codeProduct
+      type:
+        int:
+          accessMode: ReadWrite
+          defaultValue: 0
+    - name: quantity
+      type:
+        int:
+          accessMode: ReadWrite
+          defaultValue: 0
+    - name: totalPrice
+      type:
+        double:
+          accessMode: ReadWrite
+          defaultValue: 0.0
+---
+apiVersion: devices.kubeedge.io/v1alpha2
+kind: Device
+metadata:
+  name: register-01
+  namespace: default
+spec:
+  deviceModelRef:
+    name: register-model
+  nodeName: edge-node-01
+  protocol:
+    protocolName: mqtt
+    configData:
+      url: "tcp://mosquitto-service:1883"

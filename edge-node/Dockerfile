@@ -3,7 +3,7 @@ WORKDIR /build
 
 COPY . .
 
-RUN mvn clean package -DskipTests
+RUN mvn clean package -pl edge-node -am -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app

@@ -12,8 +12,8 @@ services:
 
   store-node:
     build:
-      context: .
-      dockerfile: edge-node/Dockerfile
+      context: ..
+      dockerfile: ../edge-node/Dockerfile
     container_name: store-node
     depends_on:
       - mqtt-broker
@@ -25,8 +25,8 @@ services:
 
   edge-sensor:
     build:
-      context: .
-      dockerfile: device-simulation/Dockerfile
+      context: ..
+      dockerfile: ../device-simulation/Dockerfile
     container_name: sensor-container
     depends_on:
       - mqtt-broker

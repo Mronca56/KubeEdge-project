@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edge-sensor-simulator
+  labels:
+    app: edge-sensor-simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edge-sensor-simulator
+  template:
+    metadata:
+      labels:
+        app: edge-sensor-simulator
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/edge: ""
+      tolerations:
+        - key: "node-role.kubernetes.io/edge"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: sensor-simulator
+          image: mronca56/device-simulation:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BROKER_URL
+              value: "tcp://mosquitto-edge-service:1883"

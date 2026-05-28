@@ -22,8 +22,8 @@ services:
 
   cloud-node:
     build:
-      context: .
-      dockerfile: /central-cloud/Dockerfile
+      context: ..
+      dockerfile: /Dockerfile
     container_name: cloud-node
     depends_on:
       - mqtt-broker

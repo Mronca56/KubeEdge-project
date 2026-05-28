@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class MqttSubscriber {
     private LocalDateTime lastCameraMsgTime = LocalDateTime.now();
     private LocalDateTime lastRegisterMsgTime = LocalDateTime.now();
 
+    private static final String CAMERA_TOPIC = "$hw/events/device/camera-01/twin/update";
+    private static final String REGISTER_TOPIC = "$hw/events/device/register-01/twin/update";
+
     public MqttSubscriber(DataAggregator dataAggregator) {
         this.dataAggregator = dataAggregator;
     }
@@ -59,13 +63,13 @@ public class MqttSubscriber {
             System.out.println("Connection successful!");
 
             //Subscribe al primo topic
-            client.subscribe("MO/Camera", (topic, message) -> {
+            client.subscribe(CAMERA_TOPIC, (topic, message) -> {
                 lastCameraMsgTime = LocalDateTime.now();
                 processCameraMsg(new String(message.getPayload()));
             });
 
             //Subscribe al secondo topic
-            client.subscribe("MO/Register",(topic, message) -> {
+            client.subscribe(REGISTER_TOPIC,(topic, message) -> {
                 lastRegisterMsgTime = LocalDateTime.now();
                 processRegisterMsg(new String(message.getPayload()));
             });
@@ -91,7 +95,17 @@ public class MqttSubscriber {
 
     private void processCameraMsg(String message) {
         try {
-            RawCameraDTO raw = objectMapper.readValue(message, RawCameraDTO.class);
+            JsonNode root = objectMapper.readTree(message);
+            JsonNode twin = root.path("twin");
+
+            // Ricostruisco il DTO originale dal payload KubeEdge
+            RawCameraDTO raw = new RawCameraDTO();
+            raw.setDeviceId("camera-01");
+            raw.setTimestamp(LocalDateTime.now());
+            raw.setPeopleCount(twin.path("peopleCount").path("actual").path("value").asInt());
+            raw.setQueueLength(twin.path("queueLength").path("actual").path("value").asInt());
+            raw.setSuspiciosActivity(twin.path("suspiciosActivity").path("actual").path("value").asBoolean());
+
             //Controllo se devo mandare degli alert
             if (raw.isSuspiciosActivity()) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
@@ -124,7 +138,16 @@ public class MqttSubscriber {
 
     private void processRegisterMsg(String message) {
         try {
-            RawRegisterDTO raw = objectMapper.readValue(message, RawRegisterDTO.class);
+            JsonNode root = objectMapper.readTree(message);
+            JsonNode twin = root.path("twin");
+
+            RawRegisterDTO raw = new RawRegisterDTO();
+            raw.setDeviceId("register-01");
+            raw.setTimestamp(LocalDateTime.now());
+            raw.setCodeProduct(twin.path("codeProduct").path("actual").path("value").asInt());
+            raw.setQuantity(twin.path("quantity").path("actual").path("value").asInt());
+            raw.setTotalPrice(twin.path("totalPrice").path("actual").path("value").asDouble());
+
             int current = stock.getOrDefault(raw.getCodeProduct(), 0);
             stock.replace(raw.getCodeProduct(), current - raw.getQuantity());     //Tolgo dalle scorte quelle vendute
 

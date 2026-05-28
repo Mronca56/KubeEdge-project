@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-node
+  labels:
+    app: store-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store-node
+  template:
+    metadata:
+      labels:
+        app: store-node
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/edge: ""
+      tolerations:
+        - key: "node-role.kubernetes.io/edge"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: store-node-app
+          image: mronca56/edge-node-app:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MQTT_BROKER_URL
+              value: "tcp://mosquitto-edge-service:1883"
+            - name: MQTT_CLIENT_ID
+              value: "store-node-subscriber"

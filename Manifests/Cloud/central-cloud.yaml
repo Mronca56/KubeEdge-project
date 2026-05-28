@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: central-cloud
+  labels:
+    app: central-cloud
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: central-cloud
+  template:
+    metadata:
+      name: central-cloud
+      labels:
+        app: central-cloud
+    spec:
+      containers:
+        - name: central-cloud
+          image: mronca56/cloud-node-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            #All'interno del cluster devo puntare ai servizi interni e ai loro nomi
+            - name: MQTT_BROKER_URL
+              value: "tcp://mosquitto-service:1883"
+            - name: MQTT_CLIENT_ID
+              value: "edge-worker-$${random.value}"
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://mongo-serice:27017/factory_db"
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-service
+  labels:
+    app: central-cloud
+spec:
+  selector:
+    app: central-cloud
+  type: NodePort
+  ports:
+    - port: 8080
