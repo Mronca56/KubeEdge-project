@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends  \
     iptables \
     nano \
     && rm -rf /var/lib/apt/lists/*
+#Installazione di crictl per debug
+RUN curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.36.0/crictl-v1.36.0-linux-amd64.tar.gz --output crictl-v1.36.0-linux-amd64.tar.gz &&\
+    sudo tar zxvf crictl-v1.36.0-linux-amd64.tar.gz -C /usr/local/bin &&\
+    rm -f crictl-v1.36.0.tar.gz
 #Configurazione di Containerd con le impostazioni per kubeedge
 RUN mkdir -p /etc/containerd && \
     containerd config default > /etc/containerd/config.toml && \

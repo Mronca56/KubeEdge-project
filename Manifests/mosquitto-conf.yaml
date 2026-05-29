@@ -12,6 +12,10 @@ data:
     allow_anonymous true
     
     connection edge_to_cloud
-    #Deve puntare al service mosquitto del cloud
-    address mosquitto-service:1883
-    topic cloud/# out 0
+    address 172.25.0.10:31883 
+    cleansession false
+    
+    remote_clientid edge_factory_bridge
+    local_clientid edge_factory_bridge
+    
+    topic cloud/# out 1 "" ""

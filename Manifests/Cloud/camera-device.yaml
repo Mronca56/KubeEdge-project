@@ -1,4 +1,4 @@
-apiVersion: devices.kubeedge.io/v1alpha2
+apiVersion: devices.kubeedge.io/v1beta1
 kind: DeviceModel
 metadata:
   name: camera-model
@@ -6,22 +6,16 @@ metadata:
 spec:
   properties:
     - name: peopleCount
-      type:
-        int:
-          accessMode: ReadWrite
-          defaultValue: 0
+      type: INT
+      accessMode: ReadWrite
     - name: queueLength
-      type:
-        int:
-          accessMode: ReadWrite
-          defaultValue: 0
+      type: INT
+      accessMode: ReadWrite
     - name: suspiciosActivity
-      type:
-        string:
-          accessMode: ReadWrite
-          defaultValue: "STRING"
+      type: STRING
+      accessMode: ReadWrite
 ---
-apiVersion: devices.kubeedge.io/v1alpha2
+apiVersion: devices.kubeedge.io/v1beta1
 kind: Device
 metadata:
   name: camera-01

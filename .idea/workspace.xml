@@ -6,14 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="8c6cb8d8-b4fd-4578-82b3-7a547e7fc9e7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/central-cloud/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/device-simulation/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/device-simulation/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/device-simulation/src/main/java/org/example/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/device-simulation/src/main/java/org/example/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose-cloud.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose/docker-compose-cloud.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose-edge.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose/docker-compose-edge.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/edge-node/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mosquitto-edge.conf" beforeDir="false" afterPath="$PROJECT_DIR$/mosquitto-edge.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/broker-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/broker-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/camera-device.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/camera-device.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/central-cloud.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/central-cloud.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/mongo-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/mongo-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/register-device.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/register-device.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Edge/edge-broker-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/broker-deployment-removed.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Edge/edge-node-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Edge/store-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Edge/edge-sensor-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Edge/sensor-deployment.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/mosquitto-conf.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/mosquitto-conf.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,16 +62,22 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHELLCHECK.PATH": "I do mind",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/mronc/OneDrive/Desktop/Main/Unimore/2-Magistrale/DA FARE/Distribuited edge programming/Progetti/KubeEdge/Manifests/Edge",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\mronc\OneDrive\Desktop\Main\Unimore\2-Magistrale\DA FARE\Distribuited edge programming\Progetti\KubeEdge\Manifests\Edge" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\mronc\OneDrive\Desktop\Main\Unimore\2-Magistrale\DA FARE\Distribuited edge programming\Progetti\KubeEdge" />
       <recent name="C:\Users\mronc\OneDrive\Desktop\Main\Unimore\2-Magistrale\DA FARE\Distribuited edge programming\Progetti\KubeEdge\docker-compose" />
     </key>
   </component>

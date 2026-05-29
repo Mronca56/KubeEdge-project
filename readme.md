@@ -258,3 +258,20 @@ chmod -R 777 /var/lib/kubeedge/mqtt
 sed -i 's/mqttMode: 2/mqttMode: 1/g' /etc/kubeedge/config/edgecore.yaml
 sed -i 's/mqttMode: 0/mqttMode: 1/g' /etc/kubeedge/config/edgecore.yaml
 ```
+
+Per connettersi da browser:
+```shell
+kubectl port-forward service/cloud-service 8080:8080
+```
+
+Ogni volta che faccio ripartire la struttura serve fare il rollout del cloud. Se non funziona controllare che siano tutti up anche nell'edge. A volte lo store non invia correttamente.
+
+Per entrare nel mongodb: kubectl exec -it deployment/mongo -- mongosh
+Per contare: db.Telemetries.countDocuments()
+db.Alerts.countDocuments()
+
+Connessione e disconnessione
+docker network disconnect edge-network cloud-node-control-plane
+docker network connect --ip=172.25.0.10 edge-network cloud-node-control-plane
+
+Una volta fatti i deployment per vedere i log dei nodi edge entrare nel nodo, utilizzare crictl ps per nomi container e poi crictl logs <nome-cont>

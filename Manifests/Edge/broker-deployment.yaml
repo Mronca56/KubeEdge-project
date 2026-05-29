@@ -1,47 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mosquitto
+  name: mosquitto-edge
+  labels:
+    app: mosquitto-edge
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mosquitto
+      app: mosquitto-edge
   template:
     metadata:
       labels:
-        app: mosquitto
+        app: mosquitto-edge
     spec:
       nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
+        node-role.kubernetes.io/edge: ""
       tolerations:
-        - key: "node-role.kubernetes.io/contrl-plane"
+        - key: "node-role.kubernetes.io/edge"
           operator: "Exists"
           effect: "NoSchedule"
+      hostNetwork: true
       containers:
         - name: mosquitto
-          image: eclipse-mosquitto
+          image: eclipse-mosquitto:latest
           ports:
             - containerPort: 1883
+              hostPort: 1883
           volumeMounts:
             - name: mosquitto-config
               mountPath: /mosquitto/config/mosquitto.conf
-              subPath: mosquitto-cloud.conf
+              subPath: mosquitto-edge.conf
       volumes:
         - name: mosquitto-config
           configMap:
             name: mosquitto-conf
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mosquitto-service
+  name: mosquitto-edge-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    app: mosquitto
+    app: mosquitto-edge
   ports:
     - port: 1883
       targetPort: 1883
-      nodePort: 31883

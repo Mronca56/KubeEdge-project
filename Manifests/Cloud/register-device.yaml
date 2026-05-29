@@ -1,4 +1,4 @@
-apiVersion: devices.kubeedge.io/v1alpha2
+apiVersion: devices.kubeedge.io/v1beta1
 kind: DeviceModel
 metadata:
   name: register-model
@@ -6,22 +6,16 @@ metadata:
 spec:
   properties:
     - name: codeProduct
-      type:
-        int:
-          accessMode: ReadWrite
-          defaultValue: 0
+      type: INT
+      accessMode: ReadWrite
     - name: quantity
-      type:
-        int:
-          accessMode: ReadWrite
-          defaultValue: 0
+      type: INT
+      accessMode: ReadWrite
     - name: totalPrice
-      type:
-        double:
-          accessMode: ReadWrite
-          defaultValue: 0.0
+      type: DOUBLE
+      accessMode: ReadWrite
 ---
-apiVersion: devices.kubeedge.io/v1alpha2
+apiVersion: devices.kubeedge.io/v1beta1
 kind: Device
 metadata:
   name: register-01

@@ -17,6 +17,26 @@ spec:
       labels:
         app: central-cloud
     spec:
+      initContainers:
+        - name: wait-for-mqtt
+          image: busybox:1.36
+          # Esegue un loop che tenta di contattare la porta 1883 del servizio MQTT
+          command:
+            - 'sh'
+            - '-c'
+            - >
+              echo "Verify connection broker MQTT...";
+              until nc -z mosquitto-service 1883; do
+                echo "Broker MQTT not ready, retry in 3 seconds...";
+                sleep 3;
+              done;
+              echo "Broker MQTT ready! Starting of the app.";
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+        - key: "node-role.kubernetes.io/contrl-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       containers:
         - name: central-cloud
           image: mronca56/cloud-node-app:latest
@@ -29,9 +49,9 @@ spec:
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto-service:1883"
             - name: MQTT_CLIENT_ID
-              value: "edge-worker-$${random.value}"
+              value: "central-cloud-client"
             - name: SPRING_DATA_MONGODB_URI
-              value: "mongodb://mongo-serice:27017/factory_db"
+              value: "mongodb://mongo-service:27017/factory_db"
       restartPolicy: Always
 
 ---

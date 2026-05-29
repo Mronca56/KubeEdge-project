@@ -20,11 +20,13 @@ spec:
         - key: "node-role.kubernetes.io/edge"
           operator: "Exists"
           effect: "NoSchedule"
+      hostNetwork: true
       containers:
         - name: mosquitto
           image: eclipse-mosquitto:latest
           ports:
             - containerPort: 1883
+              hostPort: 1883
           volumeMounts:
             - name: mosquitto-config
               mountPath: /mosquitto/config/mosquitto.conf
