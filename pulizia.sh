@@ -19,7 +19,7 @@ sleep 3
 # 5. Ri-applica solo i manifest applicativi
 echo "Ridistribuzione dei servizi..."
 kubectl apply -f Manifests
-kubectl apply -f Manifests/Cloud/
+kubectl apply -f Manifests/Cloud
 kubectl apply -f Manifests/Edge
 
 echo "Ambiente ripristinato con successo senza riavviare KinD!"

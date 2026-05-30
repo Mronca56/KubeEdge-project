@@ -40,7 +40,7 @@ spec:
       containers:
         - name: central-cloud
           image: mronca56/cloud-node-app:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP

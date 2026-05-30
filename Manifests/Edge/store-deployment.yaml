@@ -37,9 +37,13 @@ spec:
       containers:
         - name: store-node-app
           image: mronca56/edge-node-app:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
-            - name: MQTT_BROKER_URL
+            - name: EDGE_BROKER_URL
               value: "tcp://172.25.0.2:1883"
-            - name: MQTT_CLIENT_ID
+            - name: EDGE_CLIENT_ID
               value: "store-node-subscriber"
+            - name: CLOUD_BROKER_URL
+              value: "tcp://172.25.0.10:31883"
+            - name: CLOUD_CLIENT_ID
+              value: "store-node-publisher"

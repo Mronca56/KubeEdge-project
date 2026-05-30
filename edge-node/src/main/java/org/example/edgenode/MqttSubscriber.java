@@ -19,17 +19,21 @@ import java.util.Map;
 @Service
 public class MqttSubscriber {
     //Da passare dal file yaml
-    @Value("${mqtt.broker.url}")
-    private String brokerUrl;
-
-    @Value("${mqtt.client.id}")
-    private String clientId;
+    @Value("${edge.broker.url}")
+    private String brokerEdgeUrl;
+    @Value("${edge.client.id}")
+    private String clientEdgeId;
+    @Value("${cloud.broker.url}")
+    private String brokerCloudUrl;
+    @Value("${cloud.client.id}")
+    private String clientCloudId;
+    //Mi servono due client differenti, uno per comunicare con i device e uno per inviare al cloud
+    private MqttClient clientEdge;
+    private MqttAsyncClient clientCloud;
 
     private final DataAggregator dataAggregator;
     private final ObjectMapper objectMapper = new ObjectMapper();
     Map<Integer, Integer> stock = new HashMap<>();
-
-    private MqttClient client;
 
     //Orari degli ultimi messaggi ricevuti dai device, da usare per vedere se vanno in errore
     private LocalDateTime lastCameraMsgTime = LocalDateTime.now();
@@ -52,24 +56,43 @@ public class MqttSubscriber {
         refill();
         try {
             //Connessione al broker MQTT
-            this.client = new MqttClient(brokerUrl, clientId);
+            this.clientEdge = new MqttClient(brokerEdgeUrl, clientEdgeId);
+            this.clientCloud = new MqttAsyncClient(brokerCloudUrl, clientCloudId);
 
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
-            options.setCleanSession(true);
+            MqttConnectOptions optionsEdge = new MqttConnectOptions();
+            optionsEdge.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
+            optionsEdge.setCleanSession(true);
 
-            System.out.println("Connection attempt to broker Edge: " + brokerUrl);
-            client.connect(options);
+            System.out.println("Connection attempt to broker Edge: " + brokerEdgeUrl);
+            clientEdge.connect(optionsEdge);
+            System.out.println("Connection successful!");
+
+            MqttConnectOptions optionsCloud = new MqttConnectOptions();
+            optionsCloud.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
+            optionsCloud.setCleanSession(false);
+            optionsCloud.setConnectionTimeout(10);
+            optionsCloud.setKeepAliveInterval(20);
+
+            DisconnectedBufferOptions bufferOptions = new DisconnectedBufferOptions();
+            bufferOptions.setBufferEnabled(true);
+            bufferOptions.setBufferSize(100); // Quanti messaggi tenere in memoria mentre sei offline
+            bufferOptions.setPersistBuffer(false); // False = li tiene in RAM (va benissimo per la demo)
+            bufferOptions.setDeleteOldestMessages(false);
+
+            clientCloud.setBufferOpts(bufferOptions);
+
+            System.out.println("Connection attempt to broker Edge for Cloud: " + brokerCloudUrl);
+            clientCloud.connect(optionsCloud).waitForCompletion();
             System.out.println("Connection successful!");
 
             //Subscribe al primo topic
-            client.subscribe(CAMERA_TOPIC, (topic, message) -> {
+            clientEdge.subscribe(CAMERA_TOPIC, (topic, message) -> {
                 lastCameraMsgTime = LocalDateTime.now();
                 processCameraMsg(new String(message.getPayload()));
             });
 
             //Subscribe al secondo topic
-            client.subscribe(REGISTER_TOPIC,(topic, message) -> {
+            clientEdge.subscribe(REGISTER_TOPIC,(topic, message) -> {
                 lastRegisterMsgTime = LocalDateTime.now();
                 processRegisterMsg(new String(message.getPayload()));
             });
@@ -83,9 +106,14 @@ public class MqttSubscriber {
     public void stop(){
         //Spegnimento del client
         try {
-            if (client != null && client.isConnected()) {
-                client.disconnect();
-                client.close();
+            if (clientEdge != null && clientEdge.isConnected()) {
+                clientEdge.disconnect();
+                clientEdge.close();
+                System.out.println("MQTT client disconnected!");
+            }
+            if (clientCloud != null && clientCloud.isConnected()) {
+                clientCloud.disconnect().waitForCompletion();
+                clientCloud.close();
                 System.out.println("MQTT client disconnected!");
             }
         } catch (MqttException e) {
@@ -112,7 +140,7 @@ public class MqttSubscriber {
                         "Critical", Status.SUSPECT_ACTIVITY,
                         "SUSPICIOUS ACTIVTY ON CAMERA!!"
                 );
-                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                clientCloud.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent camera alert");
             }
             if (raw.getQueueLength() > 15) {
@@ -120,14 +148,14 @@ public class MqttSubscriber {
                         "Critical", Status.LONG_QUEUE,
                         "MORE THAN 15 PEOPLE WAITING!"
                 );
-                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                clientCloud.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent camera alert");
             }
 
             //Logica di aggregazione, gestita dalla classe apposita, se mi ritorna null vuol dire che non è ancora il momento di mandare i dati
             TelemetryDTO tel = dataAggregator.getCameras(raw);
             if (tel != null) {
-                client.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
+                clientCloud.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
                 System.out.println("Sent telemetry");
             }
 
@@ -157,13 +185,13 @@ public class MqttSubscriber {
                         "LOW STOCK OF THE PRODUCT"
                 );
                 //Il cloud dovrebbe quando riceve questo chiamare la funzione refill
-                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                clientCloud.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent register alert");
             }
 
             TelemetryDTO tel = dataAggregator.getRegisters(raw);
             if (tel != null) {
-                client.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
+                clientCloud.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
                 System.out.println("Sent telemetry");
             }
         }catch (MqttException |JacksonException e) {
@@ -182,7 +210,7 @@ public class MqttSubscriber {
                         "Critical", Status.HARDWARE_FAILURE,
                         "HARDWARE FAILURE OF A CAMERA! MORE THAN 1 MINUTE WITHOUT DATA!"
                 );
-                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                clientCloud.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent Camera alert");
             }
 
@@ -191,7 +219,7 @@ public class MqttSubscriber {
                         "Critical", Status.HARDWARE_FAILURE,
                         "HARDWARE FAILURE OF A REGISTER! MORE THAN 1 MINUTE WITHOUT DATA!"
                 );
-                client.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
+                clientCloud.publish("cloud/MO/Alert", new MqttMessage(objectMapper.writeValueAsBytes(alert)));
                 System.out.println("Sent register alert");
             }
         }catch (MqttException |JacksonException e) {

@@ -37,7 +37,7 @@ spec:
       containers:
         - name: sensor-simulator
           image: mronca56/device-simulation:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: BROKER_URL
               value: "tcp://172.25.0.2:1883"

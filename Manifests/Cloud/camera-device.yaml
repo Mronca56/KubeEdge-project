@@ -23,7 +23,7 @@ metadata:
 spec:
   deviceModelRef:
     name: camera-model
-  nodeName: edge-node-01
+  nodeName: edge-test
   protocol:
     protocolName: mqtt
     configData:

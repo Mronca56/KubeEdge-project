@@ -6,16 +6,3 @@ data:
   mosquitto-cloud.conf: |
     listener 1883 0.0.0.0
     allow_anonymous true
-
-  mosquitto-edge.conf: |
-    listener 1883 0.0.0.0
-    allow_anonymous true
-    
-    connection edge_to_cloud
-    address 172.25.0.10:31883 
-    cleansession false
-    
-    remote_clientid edge_factory_bridge
-    local_clientid edge_factory_bridge
-    
-    topic cloud/# out 1 "" ""

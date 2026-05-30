@@ -2,9 +2,7 @@ package org.example.centralcloud;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.*;
 import org.example.DTO.AlertDTO;
 import org.example.DTO.TelemetryDTO;
 import org.example.centralcloud.Entity.AlertEntity;
@@ -50,44 +48,43 @@ public class MqttListener {
             options.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
             options.setCleanSession(true);
 
+            //Imposto i metodi di callback per quando mi connetto/riconnetto al broker
+            client.setCallback(new MqttCallbackExtended() {
+
+                @Override
+                public void connectComplete(boolean reconnect, String serverURI) {
+                    System.out.println("Cloud App: Connection complete! Reconnect? " + reconnect);
+                    try {
+                        //Subscribe al primo topic
+                        client.subscribe("cloud/MO/Alert", 1, (topic, message) -> {
+                            processAlert(new String(message.getPayload()));
+                        });
+                        //Subscribe al secondo topic
+                        client.subscribe("cloud/MO/Telemetry", 1, (topic, message) -> {
+                            processTelemetry(new String(message.getPayload()));
+                        });
+
+                    } catch (MqttException e) {
+                        System.err.println("Error during subscribing: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void connectionLost(Throwable cause) {
+                    System.out.println("Warning! Lost connection to broker MQTT" + cause.getMessage());
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage message) throws Exception {}
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {}
+            });
+
+
             System.out.println("Connection attempt to broker Edge: " + brokerUrl);
             client.connect(options);
             System.out.println("Connection successful!");
-
-            //Subscribe al primo topic
-            client.subscribe("cloud/MO/Alert", (topic, message) -> {
-                //LOGICA DI ARRIVO ALERT
-                try {
-                    System.out.println("Received Camera alert");
-                    AlertDTO alertDTO = objectMapper.readValue(message.getPayload(), AlertDTO.class);
-                    AlertEntity alertEntity = new AlertEntity();
-                    //Per trasformare da un oggetto all'altro
-                    BeanUtils.copyProperties(alertDTO, alertEntity);
-
-                    //Salvo nel db
-                    alertRepo.save(alertEntity);
-                }catch (BeansException | JacksonException e){
-                    System.err.println("Fatal error on subscribing: " + e.getMessage());
-                }
-            });
-
-            //Subscribe al secondo topic
-            client.subscribe("cloud/MO/Telemetry",(topic, message) -> {
-                //LOGICA DI ARRIVO TELEMETRIE
-                try {
-                    System.out.println("Received Telemetry alert");
-                    TelemetryDTO telemetryDTO = objectMapper.readValue(message.getPayload(), TelemetryDTO.class);
-                    TelemetryEntity telemetryEntity = new TelemetryEntity();
-
-                    //Per trasformare da un oggetto all'altro
-                    BeanUtils.copyProperties(telemetryDTO, telemetryEntity);
-
-                    //Salvo nel db
-                    telemetryRepo.save(telemetryEntity);
-                }catch (BeansException | JacksonException e){
-                    System.err.println("Fatal error on subscribing: " + e.getMessage());
-                }
-            });
 
         } catch (MqttException e) {
             System.err.println("Fatal MQTT setup error on startup: " + e.getMessage());
@@ -105,6 +102,37 @@ public class MqttListener {
             }
         } catch (MqttException e) {
             System.err.println("Error during MQTT disconnection: " + e.getMessage());
+        }
+    }
+
+    private void processAlert(String message){
+        try {
+            System.out.println("Received Camera alert");
+            AlertDTO alertDTO = objectMapper.readValue(message, AlertDTO.class);
+            AlertEntity alertEntity = new AlertEntity();
+            //Per trasformare da un oggetto all'altro
+            BeanUtils.copyProperties(alertDTO, alertEntity);
+
+            //Salvo nel db
+            alertRepo.save(alertEntity);
+        }catch (BeansException | JacksonException e){
+            System.err.println("Fatal error on subscribing: " + e.getMessage());
+        }
+    }
+
+    private void processTelemetry(String message){
+        try {
+            System.out.println("Received Telemetry alert");
+            TelemetryDTO telemetryDTO = objectMapper.readValue(message, TelemetryDTO.class);
+            TelemetryEntity telemetryEntity = new TelemetryEntity();
+
+            //Per trasformare da un oggetto all'altro
+            BeanUtils.copyProperties(telemetryDTO, telemetryEntity);
+
+            //Salvo nel db
+            telemetryRepo.save(telemetryEntity);
+        }catch (BeansException | JacksonException e){
+            System.err.println("Fatal error on subscribing: " + e.getMessage());
         }
     }
 }

@@ -23,7 +23,7 @@ metadata:
 spec:
   deviceModelRef:
     name: register-model
-  nodeName: edge-node-01
+  nodeName: edge-test
   protocol:
     protocolName: mqtt
     configData:
