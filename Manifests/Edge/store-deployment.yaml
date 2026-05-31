@@ -17,7 +17,7 @@ spec:
       initContainers:
         - name: wait-for-mqtt
           image: busybox:1.36
-          # Esegue un loop che tenta di contattare la porta 1883 del servizio MQTT
+          # It runs a loop that attempts to connect to port 1883 of the MQTT service
           command:
             - 'sh'
             - '-c'
@@ -29,7 +29,7 @@ spec:
               done;
               echo "Broker MQTT ready! Starting of the app.";
       nodeSelector:
-        node-role.kubernetes.io/edge: ""
+        node-role.kubernetes.io/edge: ""  # Only possible to deploy on the edge node
       tolerations:
         - key: "node-role.kubernetes.io/edge"
           operator: "Exists"

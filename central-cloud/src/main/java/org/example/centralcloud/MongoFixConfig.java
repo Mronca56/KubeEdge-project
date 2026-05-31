@@ -1,4 +1,4 @@
-package org.example.centralcloud; // Assicurati che il package sia corretto
+package org.example.centralcloud;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * CANDIDATA ALLA RIMOZIONE
+ */
 @Configuration
 public class MongoFixConfig {
 

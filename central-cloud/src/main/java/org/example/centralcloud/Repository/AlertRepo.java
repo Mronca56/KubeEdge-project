@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Interface for crud operation of db alerts entities
+ */
 @Repository
 public interface AlertRepo extends MongoRepository<AlertEntity, String> {
     List<AlertEntity> findByStore(String store);

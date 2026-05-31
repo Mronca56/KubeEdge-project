@@ -16,9 +16,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class represents the MQTT communication handler on an edge node.
+ * Upon startup, it connects to two MQTT clients: one to communicate with the device twins and one to communicate with the central node.
+ * Upon termination, it handles graceful degradation of MQTT clients.
+ */
 @Service
 public class MqttSubscriber {
-    //Da passare dal file yaml
+    // From YAML file
     @Value("${edge.broker.url}")
     private String brokerEdgeUrl;
     @Value("${edge.client.id}")
@@ -27,18 +32,19 @@ public class MqttSubscriber {
     private String brokerCloudUrl;
     @Value("${cloud.client.id}")
     private String clientCloudId;
-    //Mi servono due client differenti, uno per comunicare con i device e uno per inviare al cloud
+
     private MqttClient clientEdge;
-    private MqttAsyncClient clientCloud;
+    private MqttAsyncClient clientCloud; // Async to allow disconnections from the cloud without causing a crash.
 
     private final DataAggregator dataAggregator;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    Map<Integer, Integer> stock = new HashMap<>();
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON mapper
+    Map<Integer, Integer> stock = new HashMap<>(); // Simulation of store's inventory (handle only one product for now!)
 
-    //Orari degli ultimi messaggi ricevuti dai device, da usare per vedere se vanno in errore
+    // Timestamps of the most recent messages received from the devices, to be used to check for errors.
     private LocalDateTime lastCameraMsgTime = LocalDateTime.now();
     private LocalDateTime lastRegisterMsgTime = LocalDateTime.now();
 
+    // Topics used by the device twins
     private static final String CAMERA_TOPIC = "$hw/events/device/camera-01/twin/update";
     private static final String REGISTER_TOPIC = "$hw/events/device/register-01/twin/update";
 
@@ -46,65 +52,104 @@ public class MqttSubscriber {
         this.dataAggregator = dataAggregator;
     }
 
+    /**
+     * This method simulates the restocking of the store's inventory
+     */
     public void refill(){
         stock.clear();
         stock.put(12345, 50);
     }
 
+    /**
+     * Runs automatically when the beans start up (@PostConstruct). It handles the connection to clients and subscribes to device twin topics.
+     * Possible MQTT exception (not blocking) if the clients doesn't connect correctly.
+     */
     @PostConstruct
     public void start(){
         refill();
         try {
-            //Connessione al broker MQTT
+            //Connection to broker MQTT edge
             this.clientEdge = new MqttClient(brokerEdgeUrl, clientEdgeId);
-            this.clientCloud = new MqttAsyncClient(brokerCloudUrl, clientCloudId);
 
             MqttConnectOptions optionsEdge = new MqttConnectOptions();
-            optionsEdge.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
-            optionsEdge.setCleanSession(true);
+            optionsEdge.setAutomaticReconnect(true); // Client will attempt to reconnect automatically if connection is lost.
+            optionsEdge.setCleanSession(true); // All pending publication deliveries for the client are removed when the client connects.
+
+            // Definition of some functions that will automatically invoke whenever needed.
+            clientEdge.setCallback(new MqttCallbackExtended() {
+                /**
+                 * On connection or reconnection it subscribes the client to the topics
+                 * @param reconnect True if it's a reconnection (for debug)
+                 */
+                @Override
+                public void connectComplete(boolean reconnect, String serverURI) {
+                    System.out.println("Edge App: Connecting local broker. Reconnect? " + reconnect);
+                    try {
+                        // It registers the devices every time the local broker (re)starts.
+                        clientEdge.subscribe(CAMERA_TOPIC, (topic, message) -> {
+                            lastCameraMsgTime = LocalDateTime.now();
+                            processCameraMsg(new String(message.getPayload()));
+                        });
+
+                        clientEdge.subscribe(REGISTER_TOPIC,(topic, message) -> {
+                            lastRegisterMsgTime = LocalDateTime.now();
+                            processRegisterMsg(new String(message.getPayload()));
+                        });
+                    } catch (MqttException e) {
+                        System.err.println("Error subscribing to topics: " + e.getMessage());
+                    }
+                }
+
+                /**
+                 * Notify if the connection is lost.
+                 */
+                @Override
+                public void connectionLost(Throwable cause) {
+                    System.out.println("Edge App: Lost connection to local broker!");
+                }
+
+                @Override
+                public void messageArrived(String topic, MqttMessage message) throws Exception {}
+
+                @Override
+                public void deliveryComplete(IMqttDeliveryToken token) {}
+            });
 
             System.out.println("Connection attempt to broker Edge: " + brokerEdgeUrl);
             clientEdge.connect(optionsEdge);
             System.out.println("Connection successful!");
 
-            MqttConnectOptions optionsCloud = new MqttConnectOptions();
-            optionsCloud.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
-            optionsCloud.setCleanSession(false);
-            optionsCloud.setConnectionTimeout(10);
-            optionsCloud.setKeepAliveInterval(20);
+            //Connection to broker MQTT cloud
+            this.clientCloud = new MqttAsyncClient(brokerCloudUrl, clientCloudId);
 
+            MqttConnectOptions optionsCloud = new MqttConnectOptions();
+            optionsCloud.setAutomaticReconnect(true); // Client will attempt to reconnect automatically if connection is lost.
+            optionsCloud.setCleanSession(false); // We want to maintain all pending publication deliveries if it disconnects.
+            optionsCloud.setConnectionTimeout(10); // How long the client will wait when trying to connect to broker before giving up (in the edge we want it to be small).
+            optionsCloud.setKeepAliveInterval(20); // Time period to ensure the connection is still alive (small in the edge).
+
+            // Creation of a buffer in case of disconnection to not lose messages
             DisconnectedBufferOptions bufferOptions = new DisconnectedBufferOptions();
             bufferOptions.setBufferEnabled(true);
-            bufferOptions.setBufferSize(100); // Quanti messaggi tenere in memoria mentre sei offline
-            bufferOptions.setPersistBuffer(false); // False = li tiene in RAM (va benissimo per la demo)
+            bufferOptions.setBufferSize(100); // How many messages can keep while you're offline
+            bufferOptions.setPersistBuffer(false);  // Kept in ram
             bufferOptions.setDeleteOldestMessages(false);
 
             clientCloud.setBufferOpts(bufferOptions);
-
             System.out.println("Connection attempt to broker Edge for Cloud: " + brokerCloudUrl);
             clientCloud.connect(optionsCloud).waitForCompletion();
             System.out.println("Connection successful!");
-
-            //Subscribe al primo topic
-            clientEdge.subscribe(CAMERA_TOPIC, (topic, message) -> {
-                lastCameraMsgTime = LocalDateTime.now();
-                processCameraMsg(new String(message.getPayload()));
-            });
-
-            //Subscribe al secondo topic
-            clientEdge.subscribe(REGISTER_TOPIC,(topic, message) -> {
-                lastRegisterMsgTime = LocalDateTime.now();
-                processRegisterMsg(new String(message.getPayload()));
-            });
 
         } catch (MqttException e) {
             System.err.println("Fatal MQTT setup error on startup: " + e.getMessage());
         }
     }
 
+    /**
+     * Graceful client's disconnection
+     */
     @PreDestroy
     public void stop(){
-        //Spegnimento del client
         try {
             if (clientEdge != null && clientEdge.isConnected()) {
                 clientEdge.disconnect();
@@ -121,12 +166,16 @@ public class MqttSubscriber {
         }
     }
 
+    /**
+     * Method to process messages of the cameras, and to send them to the cloud topic
+     * @param message payload read from the device twin topic
+     */
     private void processCameraMsg(String message) {
         try {
             JsonNode root = objectMapper.readTree(message);
             JsonNode twin = root.path("twin");
 
-            // Ricostruisco il DTO originale dal payload KubeEdge
+            // Translation from device payload to raw DTO data
             RawCameraDTO raw = new RawCameraDTO();
             raw.setDeviceId("camera-01");
             raw.setTimestamp(LocalDateTime.now());
@@ -134,7 +183,7 @@ public class MqttSubscriber {
             raw.setQueueLength(twin.path("queueLength").path("actual").path("value").asInt());
             raw.setSuspiciosActivity(twin.path("suspiciosActivity").path("actual").path("value").asBoolean());
 
-            //Controllo se devo mandare degli alert
+            // Check if there are some Alerts to sent and in case build them and publish them.
             if (raw.isSuspiciosActivity()) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
                         "Critical", Status.SUSPECT_ACTIVITY,
@@ -152,7 +201,7 @@ public class MqttSubscriber {
                 System.out.println("Sent camera alert");
             }
 
-            //Logica di aggregazione, gestita dalla classe apposita, se mi ritorna null vuol dire che non è ancora il momento di mandare i dati
+            //Aggregation logic: if it returns null, it means it's not yet time to send the data
             TelemetryDTO tel = dataAggregator.getCameras(raw);
             if (tel != null) {
                 clientCloud.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
@@ -164,11 +213,16 @@ public class MqttSubscriber {
         }
     }
 
+    /**
+     * Method to process messages of the registers, and to send them to the cloud topic
+     * @param message payload read from the device twin topic
+     */
     private void processRegisterMsg(String message) {
         try {
             JsonNode root = objectMapper.readTree(message);
             JsonNode twin = root.path("twin");
 
+            // Translation from device payload to raw DTO data
             RawRegisterDTO raw = new RawRegisterDTO();
             raw.setDeviceId("register-01");
             raw.setTimestamp(LocalDateTime.now());
@@ -177,8 +231,9 @@ public class MqttSubscriber {
             raw.setTotalPrice(twin.path("totalPrice").path("actual").path("value").asDouble());
 
             int current = stock.getOrDefault(raw.getCodeProduct(), 0);
-            stock.replace(raw.getCodeProduct(), current - raw.getQuantity());     //Tolgo dalle scorte quelle vendute
+            stock.replace(raw.getCodeProduct(), current - raw.getQuantity());     //Remove products from inventory
 
+            // Check if there are some Alerts to sent and in case build them and publish them.
             if (stock.get(raw.getCodeProduct()) <= 0) {
                 AlertDTO alert = new AlertDTO("MO", LocalDateTime.now(),
                         "Critical", Status.LOW_STOCK,
@@ -189,6 +244,7 @@ public class MqttSubscriber {
                 System.out.println("Sent register alert");
             }
 
+            //Aggregation logic: if it returns null, it means it's not yet time to send the data
             TelemetryDTO tel = dataAggregator.getRegisters(raw);
             if (tel != null) {
                 clientCloud.publish("cloud/MO/Telemetry", new MqttMessage(objectMapper.writeValueAsBytes(tel)));
@@ -199,7 +255,10 @@ public class MqttSubscriber {
         }
     }
 
-    //Ogni minuto controllo se ho errori hardware
+
+    /**
+     * Method that every minute checks if all the devices connected are running or they've had any problems.
+     */
     @Scheduled(fixedDelay = 60000)
     public void scheduled() {
         try {

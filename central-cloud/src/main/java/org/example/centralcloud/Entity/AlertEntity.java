@@ -9,7 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-//Classe Alert per MongoDB
+/**
+ * Alert entity for table MongoDB
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

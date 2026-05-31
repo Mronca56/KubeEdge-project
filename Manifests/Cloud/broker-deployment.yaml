@@ -13,7 +13,7 @@ spec:
         app: mosquitto
     spec:
       nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
+        node-role.kubernetes.io/control-plane: "" # Only deploy on control plane node
       tolerations:
         - key: "node-role.kubernetes.io/contrl-plane"
           operator: "Exists"
@@ -32,6 +32,7 @@ spec:
           configMap:
             name: mosquitto-conf
 
+# We need the service to expose the broker to the edge in order to communicate
 ---
 apiVersion: v1
 kind: Service

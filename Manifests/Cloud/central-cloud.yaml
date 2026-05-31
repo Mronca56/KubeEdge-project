@@ -20,7 +20,7 @@ spec:
       initContainers:
         - name: wait-for-mqtt
           image: busybox:1.36
-          # Esegue un loop che tenta di contattare la porta 1883 del servizio MQTT
+          # It runs a loop that attempts to connect to port 1883 of the MQTT service
           command:
             - 'sh'
             - '-c'
@@ -45,7 +45,7 @@ spec:
             - containerPort: 8080
               protocol: TCP
           env:
-            #All'interno del cluster devo puntare ai servizi interni e ai loro nomi
+            # Within the cluster, I need to point to the internal services and their names
             - name: MQTT_BROKER_URL
               value: "tcp://mosquitto-service:1883"
             - name: MQTT_CLIENT_ID

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Interface for crud operation of db telemetries entities
+ */
 @Repository
 public interface TelemetryRepo extends MongoRepository<TelemetryEntity, String> {
     List<TelemetryEntity> findByStore(String store);

@@ -5,18 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8c6cb8d8-b4fd-4578-82b3-7a547e7fc9e7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Manifests/Cloud/broker-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/broker-deployment.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Manifests/Cloud/camera-device.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/camera-device.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Manifests/Cloud/central-cloud.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/central-cloud.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Manifests/Cloud/register-device.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Cloud/register-device.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Manifests/Edge/broker-deployment.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Manifests/Edge/sensor-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Edge/sensor-deployment.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Manifests/Edge/store-deployment.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/Edge/store-deployment.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Manifests/mosquitto-conf.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Manifests/mosquitto-conf.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/broker-deployment-removed.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/CentralController.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/CentralController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/AlertEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/AlertEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/TelemetryEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Entity/TelemetryEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MongoFixConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MongoFixConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MqttListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/MqttListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/AlertRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/AlertRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/TelemetryRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Repository/TelemetryRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/AlertService.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/AlertService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/TelemetryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/central-cloud/src/main/java/org/example/centralcloud/Service/TelemetryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/device-simulation/src/main/java/org/example/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/device-simulation/src/main/java/org/example/Simulator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/DataAggregator.java" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/DataAggregator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/edge-node/src/main/java/org/example/edgenode/MqttSubscriber.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pulizia.sh" beforeDir="false" afterPath="$PROJECT_DIR$/pulizia.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Appunti/appunti.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/RawCameraDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/RawCameraDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/RawRegisterDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/RawRegisterDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/TelemetryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/shared-models/src/main/java/org/example/DTO/TelemetryDTO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -4,20 +4,21 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.example.DTO.RawCameraDTO;
-import org.example.DTO.RawRegisterDTO;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class that simulate the devices of an edge node and send regularly the data to the edge node.
+ */
 public class Simulator {
-
+    // It connects to the local edge's mosquitto
     private static final String brokerUrl = System.getenv("BROKER_URL") != null ? System.getenv("BROKER_URL") : "tcp://localhost:1883";
+    // Topics of the device twins
     private static final String CAMERA_TOPIC = "$hw/events/device/camera-01/twin/update";
     private static final String REGISTER_TOPIC = "$hw/events/device/register-01/twin/update";
 
@@ -26,23 +27,24 @@ public class Simulator {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            //Connessione al broker MQTT
+            //Connection to broker MQTT
             MqttClient client = new MqttClient(brokerUrl, MqttClient.generateClientId());
 
             MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(true); // Il client proverà a ricollegarsi da solo se cade la rete
+            options.setAutomaticReconnect(true);
             options.setCleanSession(true);
 
             System.out.println("Connection attempt to broker Edge: " + brokerUrl);
             client.connect(options);
             System.out.println("Connection successful!");
 
+            // Scheduler to execute regularly the creation and the publishing of the message
             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
-            // Task per la Camera (ogni 2 secondi)
+            // Task for the Camera (every 2 seconds)
             Runnable cameraTask = () -> {
                 try {
-                    // Costruzione del formato DeviceTwin KubeEdge
+                    // Building the KubeEdge DeviceTwin format
                     ObjectNode twin = objectMapper.createObjectNode();
                     twin.set("peopleCount", createTwinValue(objectMapper, String.valueOf(r.nextInt(50))));
                     twin.set("queueLength", createTwinValue(objectMapper, String.valueOf(r.nextInt(20))));
@@ -58,11 +60,11 @@ public class Simulator {
                 }
             };
 
-            // Task per la Cassa (ogni 3 secondi)
+            // Task for the cash Register (every 3 seconds)
             Runnable registerTask = () -> {
                 try {
-                    int quant = r.nextInt(10);
-                    //Anche qui costruisco nel formato Device Twin
+                    int quant = r.nextInt(10); // Random quantity of products sold
+                    // Building the KubeEdge DeviceTwin format
                     ObjectNode twin = objectMapper.createObjectNode();
                     twin.set("codeProduct", createTwinValue(objectMapper, "12345"));
                     twin.set("quantity", createTwinValue(objectMapper, String.valueOf(quant)));
@@ -84,14 +86,14 @@ public class Simulator {
             //Graceful shutdown
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 System.out.println("Shutdown starting...");
-                scheduler.shutdown(); // Impedisce l'avvio di nuovi task
+                scheduler.shutdown(); // Prevents new tasks from starting
                 try {
-                    // Aspetta fino a 2 secondi che i task in esecuzione finiscano
+                    // Wait up to 2 seconds for the running tasks to finish
                     if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
-                        scheduler.shutdownNow(); // Forza la chiusura
+                        scheduler.shutdownNow(); // Then force closure
                     }
 
-                    // Disconnessione pulita da MQTT
+                    // Clean disconnection from MQTT
                     if (client.isConnected()) {
                         client.disconnect();
                         client.close();
@@ -108,14 +110,28 @@ public class Simulator {
         }
     }
 
+    /**
+     * Constructs a JSON object representing a digital twin property structure.
+     *
+     * @param mapper The Jackson ObjectMapper used to instantiate JSON nodes.
+     * @param value  The string value to be assigned to the property.
+     * @return An ObjectNode formatted with the structured "actual" and "metadata" fields.
+     */
     private static ObjectNode createTwinValue(ObjectMapper mapper, String value) {
+
+        // Create the 'actual' node and populate it with the provided value
         ObjectNode actual = mapper.createObjectNode();
         actual.put("value", value);
+
+        // Create the 'metadata' node and set its type to "Updated"
         ObjectNode metadata = mapper.createObjectNode();
         metadata.put("type", "Updated");
+
+        //Assemble the parent 'property' node by attaching the actual and metadata nodes
         ObjectNode property = mapper.createObjectNode();
         property.set("actual", actual);
         property.set("metadata", metadata);
+
         return property;
     }
 }

@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-//Classe Telemetry per MongoDB
+/**
+ * Telemetry entity for table MongoDB
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Class to handle external connections and requests, to give a sort of interface
+ */
 @RestController
 @RequestMapping("/api")
 public class CentralController {
@@ -20,7 +23,6 @@ public class CentralController {
         this.telemetryService = telemetryService;
     }
 
-    //Metodi per i singoli store
     @GetMapping("/store/{store}/alert")
     public List<AlertEntity> getAlerts(@PathVariable String store) {
         return alertService.findByStore(store);
@@ -34,7 +36,6 @@ public class CentralController {
         return telemetryService.averageQueueByStore(store);
     }
 
-    //Valori totali
     @GetMapping("/total-revenue")
     public Double getTotalRevenue() {
         return telemetryService.sumTotalRevenue();
@@ -49,7 +50,6 @@ public class CentralController {
         return telemetryService.findAll();
     }
 
-    //Per cancellare tutto
     @DeleteMapping
     public void deleteAll() {
         alertService.deleteAll();

@@ -1,3 +1,4 @@
+# Definition of Register entity for device twins
 apiVersion: devices.kubeedge.io/v1beta1
 kind: DeviceModel
 metadata:
