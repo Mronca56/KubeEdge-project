@@ -37,14 +37,14 @@ KubeEdge steps in to physically separate the control-plane and Worker nodes. It 
 
 * **EdgeCore**: A lightweight edge-side Kubernetes agent that runs on every edge node. It manages containers and communicates with the cloud.
   1. **EdgeHub**: A web socket client that interacts with the cloud service. This includes synchronizing cloud-side resource updates to the edge and reporting edge-side host and device state changes to the cloud.
-  2. **Edged**: A lightweight kubelet replacement for edge nodes.
+  2. **Edged**: A lightweight kubelet replacement for edge nodes, and it manages containerized applications.
   3. **EventBus**: An MQTT client for interacting with MQTT servers (mosquitto), offering publish and subscribe capabilities to other components. It's used to communicate with applications running on edge via MQTT.
   4. **ServiceBus**: An HTTP client for interacting with HTTP servers (REST), offering HTTP client capabilities to cloud components to reach HTTP servers running at the edge. It's used to communicate with applications running on edge via HTTP.
-  5. **Device Twins**: The cloud representation of edge devices. A digital twin of your physical device stays synchronized, allowing cloud applications to interact with edge devices as if they were local.
+  5. **Device Twins**: An edge-side module that maintains the digital twin of your physical device locally. It keeps the device's actual and desired states synchronized, ensuring autonomous operation and local MQTT communication even during cloud disconnections.
 * **CloudCore**: The cloud-side component that runs in the Kubernetes cluster. It is the central node that manages all Edge nodes and cloud-edge communication.
   1. **CloudHub**: A web socket server responsible for monitoring cloud-side changes, caching, and sending messages to the EdgeHub.
   2. **EdgeController**: An extended Kubernetes controller that manages the metadata of edge pods and nodes, so that data can be routed to a specific edge node.
-  3. **DeviceController**: An extended Kubernetes controller that manages devices to allow the synchronization of metadata and device state data between the edge and the cloud.
+  3. **DeviceController**: An extended Kubernetes controller that provides the cloud representation of edge devices. It synchronizes the states between the cloud and the edge, allowing cloud applications to interact with physical devices natively via Kubernetes APIs as if they were local.
 
 <div style="text-align: center;">
 <img alt="KubeEdge architecture" height="380,5" src="images/architettura.png" width="470"/>
@@ -80,7 +80,7 @@ KubeEdge supports device management with the help of Kubernetes CRDs[^1] and Dev
 
 ## KubeEdge Benefits
 
-KubeEdge extends native containerized application orchestration and device management to hosts located at the Edge, building upon Kubernetes and providing core infrastructure support for networking, application deployment, and metadata synchronization between the cloud and the Edge. It also supports MQTT and allows developers to write custom logic and enable communication between resource-constrained devices at the Edge. It unifies operations across cloud and edge environments, ensuring consistent management and implementation strategies. This uniformity reduces the complexity associated with managing separate systems for cloud and edge.
+KubeEdge allows to unify operations across cloud and edge environments, ensuring consistent management and deployment strategies. This uniformity reduces the complexity associated with maintaining separate systems for cloud and edge. It also supports MQTT and allows developers to write custom logic and enable communication between resource-constrained devices at the Edge.
 
 Using Kubernetes at the edge also improves resource efficiency and reliability. Inherent Kubernetes features, such as self-healing, load balancing, and automated deployments, adapt well to edge environments, providing resilient edge solutions. By leveraging these features, companies can deploy scalable applications at the edge with confidence in their stability and performance.
 
