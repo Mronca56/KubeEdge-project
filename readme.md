@@ -46,3 +46,7 @@ The KubeEdge cluster consists of numerous Pods, strategically distributed betwee
     * The central node of the application.
 
    In terms of networking, **MongoDB** is exposed solely within the cluster via a dedicated Service (ClusterIP). The **broker** and the **central application**, however, use Services that expose them externally: the app must be accessible to end-users, while the broker must accept incoming connections from the edge nodes (which, from a network perspective, communicate with the KubeEdge cluster from the outside).
+
+<div style="text-align: center;">
+<img alt="Architecture KubeEdge Project" src="images/architecture.png"/>
+</div>
