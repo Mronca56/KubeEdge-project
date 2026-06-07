@@ -1,12 +1,12 @@
 # KubeEdge
 
-KubeEdge is an open-source system that extends native containerized application orchestration and device management to hosts located at the Edge. It is built upon Kubernetes and provides the core infrastructure support for networking, application deployment, and metadata synchronization between the cloud and the edge. Managing edge applications means dealing with unreliable networks, resource constraints, device integration complexity, and the need to maintain separate management tools for the edge and the cloud. With KubeEdge, it is possible to use standard Kubernetes APIs to manage both cloud and edge workloads, thanks to integrated device management, offline functionality, and automatic synchronization.
+KubeEdge is an open-source system that extends native containerized application orchestration and device management to hosts located at the Edge. It is built upon Kubernetes and provides the core infrastructure support for networking, application deployment, and metadata synchronization between the cloud and the edge. 
 
 <div style="text-align: center;">
 <img alt="CloudEdge" src="images/cloude_edge.png" width="500" height="292"/>
 </div>
 
-KubeEdge integrates cloud computing with edge computing, providing a platform to build, deploy, and manage edge applications, simplifying the management of unstable connections and resource-constrained environments. By leveraging the strengths of Kubernetes, KubeEdge ensures that edge devices benefit from the same orchestration and management that Kubernetes offers in traditional cloud environments.
+Managing edge applications means dealing with unreliable networks, resource constraints, device integration complexity, and the need to maintain separate management tools for the edge and the cloud. With KubeEdge, it is possible to use standard Kubernetes APIs to manage both cloud and edge workloads, thanks to integrated device management, offline functionality, and automatic synchronization. It provides a unified platform to build, deploy, and manage edge applications, simplifying the management of unstable connections and resource-constrained environments. By leveraging the strengths of Kubernetes, KubeEdge ensures that edge devices benefit from the same orchestration and management that Kubernetes offers in traditional cloud environments.
 
 ---
 
@@ -35,16 +35,16 @@ A Kubernetes cluster is divided into two main areas:
 
 KubeEdge steps in to physically separate the control-plane and Worker nodes. It was created because the standard Kubelet is too heavy for edge nodes (often small IoT devices) and, most importantly, panics if it loses its internet connection with the API Server. The main components are:
 
-* **EdgeCore**: A lightweight edge-side Kubernetes agent that runs on every edge node. It manages containers and communicates with the cloud.
-  1. **EdgeHub**: A web socket client that interacts with the cloud service. This includes synchronizing cloud-side resource updates to the edge and reporting edge-side host and device state changes to the cloud.
-  2. **Edged**: A lightweight kubelet replacement for edge nodes.
-  3. **EventBus**: An MQTT client for interacting with MQTT servers (mosquitto), offering publish and subscribe capabilities to other components. It's used to communicate with applications running on edge via MQTT.
-  4. **ServiceBus**: An HTTP client for interacting with HTTP servers (REST), offering HTTP client capabilities to cloud components to reach HTTP servers running at the edge. It's used to communicate with applications running on edge via HTTP.
-  5. **Device Twins**: The cloud representation of edge devices. A digital twin of your physical device stays synchronized, allowing cloud applications to interact with edge devices as if they were local.
 * **CloudCore**: The cloud-side component that runs in the Kubernetes cluster. It is the central node that manages all Edge nodes and cloud-edge communication.
   1. **CloudHub**: A web socket server responsible for monitoring cloud-side changes, caching, and sending messages to the EdgeHub.
   2. **EdgeController**: An extended Kubernetes controller that manages the metadata of edge pods and nodes, so that data can be routed to a specific edge node.
-  3. **DeviceController**: An extended Kubernetes controller that manages devices to allow the synchronization of metadata and device state data between the edge and the cloud.
+  3. **DeviceController**: An extended Kubernetes controller that provides the cloud representation of edge devices. It synchronizes the states between the cloud and the edge, allowing cloud applications to interact with physical devices natively via Kubernetes APIs as if they were local.
+* **EdgeCore**: A lightweight edge-side Kubernetes agent that runs on every edge node. It manages containers and communicates with the cloud.
+  1. **EdgeHub**: A web socket client that interacts with the cloud service. This includes synchronizing cloud-side resource updates to the edge and reporting edge-side host and device state changes to the cloud.
+  2. **Edged**: A lightweight kubelet replacement for edge nodes, and it manages containerized applications.
+  3. **EventBus**: An MQTT client for interacting with MQTT servers (mosquitto), offering publish and subscribe capabilities to other components. It's used to communicate with applications running on edge via MQTT.
+  4. **ServiceBus**: An HTTP client for interacting with HTTP servers (REST), offering HTTP client capabilities to cloud components to reach HTTP servers running at the edge. It's used to communicate with applications running on edge via HTTP.
+  5. **Device Twins**: An edge-side module that maintains the digital twin of your physical device locally. It keeps the device's actual and desired states synchronized, ensuring autonomous operation and local MQTT communication even during cloud disconnections.
 
 <div style="text-align: center;">
 <img alt="KubeEdge architecture" height="380,5" src="images/architettura.png" width="470"/>
@@ -60,14 +60,14 @@ Device Twins (often referred to as **digital device twins**) are software repres
 <img alt="CloudEdge" src="images/Digital-Twin.jpg" width="450" height="180"/>
 </div>
 
-Device Twins simplify the management and security of multiple devices, enabling their improvement over time:
+In KubeEdge, Device Twins simplify the management and security of multiple devices by:
 
-* They centralize device configuration and reduce manual configuration errors.
-* They enable faster troubleshooting thanks to a comprehensive history of states and events.
-* They support predictive maintenance using telemetry trends.
-* They make firmware updates safer through clear monitoring of device status.
-* They improve reliability through early anomaly detection.
-* They provide auditable records for compliance and incident response purposes.
+* Centralizing device configuration and reducing manual configuration errors.
+* Enabling faster troubleshooting thanks to a comprehensive history of states and events.
+* Supporting predictive maintenance using telemetry trends.
+* Making firmware updates safer through clear monitoring of device status.
+* Improving reliability through early anomaly detection.
+* Providing auditable records for compliance and incident response purposes.
 
 KubeEdge supports device management with the help of Kubernetes CRDs[^1] and Device Mappers corresponding to the one being used. Two elements are used to define the device:
 
@@ -80,7 +80,9 @@ KubeEdge supports device management with the help of Kubernetes CRDs[^1] and Dev
 
 ## KubeEdge Benefits
 
-KubeEdge extends native containerized application orchestration and device management to hosts located at the Edge, building upon Kubernetes and providing core infrastructure support for networking, application deployment, and metadata synchronization between the cloud and the Edge. It also supports MQTT and allows developers to write custom logic and enable communication between resource-constrained devices at the Edge. It unifies operations across cloud and edge environments, ensuring consistent management and implementation strategies. This uniformity reduces the complexity associated with managing separate systems for cloud and edge.
+KubeEdge unifies operations across cloud and edge environments, ensuring consistent management and deployment strategies without the complexity of maintaining separate systems.
+
+KubeEdge allows to unify operations across cloud and edge environments, ensuring consistent management and deployment strategies. This uniformity reduces the complexity associated with maintaining separate systems for cloud and edge. It also supports MQTT and allows developers to write custom logic and enable communication between resource-constrained devices at the Edge.
 
 Using Kubernetes at the edge also improves resource efficiency and reliability. Inherent Kubernetes features, such as self-healing, load balancing, and automated deployments, adapt well to edge environments, providing resilient edge solutions. By leveraging these features, companies can deploy scalable applications at the edge with confidence in their stability and performance.
 
@@ -104,11 +106,7 @@ KubeEdge supports the horizontal scaling of applications across multiple edge no
 
 The KubeEdge architecture also supports efficient resource management across a distributed set of edge nodes. This facilitates scaling operations, making it easy to deploy large-scale edge applications.
 
-### 5. Edge Deployment
-
-KubeEdge simplifies application deployment in edge environments. Thanks to its integration with the native Kubernetes API, KubeEdge allows developers to use familiar tools and manifests to deploy workloads across distributed edge nodes.
-
-### 6. Optimized for Edge Environments
+### 5. Optimized for Edge Environments
 
 KubeEdge supports edge-specific configurations, such as node affinity and local storage, to ensure that workloads run efficiently even in resource-constrained contexts.
 
