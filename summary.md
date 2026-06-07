@@ -2,6 +2,10 @@
 
 KubeEdge is an open-source system that extends native containerized application orchestration and device management to hosts located at the Edge. It is built upon Kubernetes and provides the core infrastructure support for networking, application deployment, and metadata synchronization between the cloud and the edge. Managing edge applications means dealing with unreliable networks, resource constraints, device integration complexity, and the need to maintain separate management tools for the edge and the cloud. With KubeEdge, it is possible to use standard Kubernetes APIs to manage both cloud and edge workloads, thanks to integrated device management, offline functionality, and automatic synchronization.
 
+<div style="text-align: center;">
+<img alt="CloudEdge" src="images/cloude_edge.png" width="500" height="292"/>
+</div>
+
 KubeEdge integrates cloud computing with edge computing, providing a platform to build, deploy, and manage edge applications, simplifying the management of unstable connections and resource-constrained environments. By leveraging the strengths of Kubernetes, KubeEdge ensures that edge devices benefit from the same orchestration and management that Kubernetes offers in traditional cloud environments.
 
 ---
@@ -21,6 +25,10 @@ A Kubernetes cluster is divided into two main areas:
   * *Kubelet*: Takes orders from the API Server (e.g., "start this container") and constantly reports the node's health status back to it.
   * *Kube-Proxy*: Makes the service available externally, routes communication to other pods, and performs load balancing.
 
+<div style="text-align: center;">
+<img alt="Kubernetes" src="images/kubernetes.jpg"/>
+</div>
+
 ---
 
 ## KubeEdge Architecture
@@ -38,11 +46,19 @@ KubeEdge steps in to physically separate the control-plane and Worker nodes. It 
   2. **EdgeController**: An extended Kubernetes controller that manages the metadata of edge pods and nodes, so that data can be routed to a specific edge node.
   3. **DeviceController**: An extended Kubernetes controller that manages devices to allow the synchronization of metadata and device state data between the edge and the cloud.
 
+<div style="text-align: center;">
+<img alt="KubeEdge architecture" height="380,5" src="images/architettura.png" width="470"/>
+</div>
+
 ---
 
 ### Device Twins
 
 Device Twins (often referred to as **digital device twins**) are software representations of physical devices that mirror the identity, configuration, state, telemetry data, and history of each device in a backend system. It includes properties, behaviors and relationships that it has in physical world, serving as a bridge between the physical and digital worlds. A device twin acts as the *single source of truth* regarding the object's characteristics, configuration settings, and current activities.
+
+<div style="text-align: center;">
+<img alt="CloudEdge" src="images/Digital-Twin.jpg" width="450" height="180"/>
+</div>
 
 Device Twins simplify the management and security of multiple devices, enabling their improvement over time:
 
