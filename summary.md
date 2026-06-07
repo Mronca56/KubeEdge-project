@@ -82,10 +82,6 @@ KubeEdge supports device management with the help of Kubernetes CRDs[^1] and Dev
 
 KubeEdge unifies operations across cloud and edge environments, ensuring consistent management and deployment strategies without the complexity of maintaining separate systems.
 
-KubeEdge allows to unify operations across cloud and edge environments, ensuring consistent management and deployment strategies. This uniformity reduces the complexity associated with maintaining separate systems for cloud and edge. It also supports MQTT and allows developers to write custom logic and enable communication between resource-constrained devices at the Edge.
-
-Using Kubernetes at the edge also improves resource efficiency and reliability. Inherent Kubernetes features, such as self-healing, load balancing, and automated deployments, adapt well to edge environments, providing resilient edge solutions. By leveraging these features, companies can deploy scalable applications at the edge with confidence in their stability and performance.
-
 ### 1. Native Kubernetes API at the Edge
 
 This feature allows developers and operators to use familiar Kubernetes tools and procedures, whether they are deploying applications in cloud data centers or in an edge environment. It also ensures that the same orchestration and management strategies are consistent across all environments, driving efficiency and reducing the learning curve. This approach also reduces the need for tailor-made solutions designed exclusively for edge deployments.
