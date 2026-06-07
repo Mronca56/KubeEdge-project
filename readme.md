@@ -29,7 +29,7 @@ The application code is structured into four main modules:
     * Buffering local data to generate and send periodic reports.
     * A one-minute health-status check to verify the proper functioning of the Devices.
 
-4. **Cloud-node**: Represents the central node (Control Plane) of the application. It handles the ingestion of aggregated data from the edge nodes and persists it in a **MongoDB** database. This data is then exposed and made accessible to end-users via a dedicated interface.
+4. **Cloud-node**: Represents the central node (Control Plane) of the application. It handles the ingestion of aggregated data from the edge nodes and persists it in a **MongoDB** database. This data is then exposed and made accessible to end-users via an API.
 
 ---
 

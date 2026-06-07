@@ -53,7 +53,7 @@ public class MqttListener {
 
             MqttConnectOptions options = new MqttConnectOptions();
             options.setAutomaticReconnect(true);
-            options.setCleanSession(true);
+            options.setCleanSession(false);
 
             // Setting up callback methods for when it connects to or reconnect with the broker
             client.setCallback(new MqttCallbackExtended() {
