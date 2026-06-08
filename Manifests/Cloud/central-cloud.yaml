@@ -31,6 +31,19 @@ spec:
                 sleep 3;
               done;
               echo "Broker MQTT ready! Starting of the app.";
+        - name: wait-for-mongodb
+          image: mongo:latest
+          #It runs a loop that tries to ping mongoDB service, waiting for it to start
+          command:
+            - 'sh'
+            - '-c'
+            - >
+              echo "Verify MongoDB readiness...";
+              until mongosh --host mongo-service --port 27017 --eval 'db.adminCommand("ping")' --quiet; do
+                echo "MongoDB not ready to accept connections, retry in 3 seconds...";
+                sleep 3;
+              done;
+              echo "MongoDB is fully ready! Starting the app.";
       nodeSelector:
         node-role.kubernetes.io/control-plane: ""
       tolerations:
